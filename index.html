@@ -1,0 +1,171 @@
+<html>
+<head>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<title>GDPR Lockdown</title>
+
+	<!--- START: YOU NEED THIS -->
+	<script src="main.js"></script>
+	<!--- END -->
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+	<style>
+	body {
+		margin: 0;
+		padding: 0;
+	}
+	body * {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 16px;
+		font-weight: normal;
+	}
+	b {
+		font-weight: 800;
+	}
+	h1, h2 {
+		font-weight: bold;
+	}
+	h1 {
+		margin-top: 20px;
+		font-size: 22px;
+	}
+	#page {
+		width: 90%;
+		max-width: 720px;
+		margin: 0 auto;
+	}
+	.box {
+		border-bottom: 1px solid #ccc;
+		margin-bottom: 20px;
+		padding-bottom: 20px;
+	}
+	iframe, #DV-viewer {
+		max-width: 500px;
+	}
+
+	#controls {
+		
+	}
+	button {
+		border: 1px solid #ccc;
+		border-radius: 5px;
+		margin:  5px;
+		padding: 5px 12px;
+		font-size: 12px;
+	}
+	</style>
+</head>
+<body>
+	<div id="page">
+		<h1>Demo<h1>
+		<div id="controls">
+			<p id="status">Unknown</p>
+			<button data-action="I">Set to EU</button>
+			<button data-action="O">Set to Outside EU</button>
+			<button data-action="X">Clear cookie</button>
+		</div>
+
+		<div class='box'>
+			<h2>YouTube</h2>
+			<iframe width="560" height="315" src="https://www.youtube.com/embed/M7lc1UVf-VE" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+		</div>
+
+		<div class='box'>
+			<h2>DocumentCloud Embed Example</h2>
+			<div id="DV-viewer" class="DV-container"></div>
+			<script src="https://assets.documentcloud.org/viewer/loader.js"></script>
+			<script>
+				DV.load('https://www.documentcloud.org/documents/96825-shale-gas-bubble-emails-v2.js', {
+					width:  620,
+					height: 420,
+					container: "#DV-viewer"
+			});
+			</script>
+		</div>
+
+		<div class='box'>
+			<h2>Twitter Embed Example</h2>
+			<blockquote class="twitter-tweet" data-lang="en"><!-- optional paramter: data-cards="hidden" -->
+				<p lang="en" dir="ltr">West Virginia primary election results <a href="https://t.co/wYdWHKF7YF">https://t.co/wYdWHKF7YF</a></p>&mdash; The New York Times (@nytimes) <a href="https://twitter.com/nytimes/status/994188749264257025?ref_src=twsrc%5Etfw">May 9, 2018</a>
+			</blockquote>
+			<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+		</div>
+	</div>
+
+	<script>
+		var App = {
+			init: function(){
+				this.addEvents();
+				this.updateStatus();
+			},
+			updateStatus: function() {
+				var status = this.getCookie('location');
+				var msg = "A problem occurred.";
+				console.log("s", status);
+				switch(status) {
+					case "0":
+						msg = "Cookie is set to be outside the EU. GDPR does not apply.";
+						break;
+					case "1":
+						msg = "Cookie is set to be inside the EU. GDPR applies.";
+						break;
+					case "":
+					case null:
+						msg = "No cookie is set. You may want to consider whether GDPR applies or not in these cases.";
+						break;
+				}
+				document.getElementById("status").innerHTML = "<b>Status:</b> " + msg;
+			},
+			addEvents: function() {
+				var controls = document.getElementById("controls");
+				controls.addEventListener("click", this.click, false);
+			},
+			click: function(e) {
+				if (e.target.nodeName === "BUTTON") {
+					var v = e.target.getAttribute("data-action") || "";
+					console.log("button", v);
+					switch(v) {
+						case "O":
+							App.setCookie('location', '0', 99); /* Is from outside the EU */
+							break;
+						case "I":
+							App.setCookie('location', '1', 99); /* Is from the EU */
+							break;
+						case "X":
+							App.eraseCookie('location');
+							break;
+					}
+					window.location.reload(false); 
+				}
+			},
+			getCookie:function (name) {
+				var name = name + "=";
+				var ca = document.cookie.split(';');
+				for(var i=0;i < ca.length;i++) {
+					var c = ca[i];
+					while (c.charAt(0)==' ') c = c.substring(1,c.length);
+					if (c.indexOf(name) == 0) return c.substring(name.length,c.length);
+				}
+				return null;
+			},
+			setCookie: function (name, value, days) {
+				var expires = "";
+				if (days) {
+					var date = new Date();
+					date.setTime(date.getTime() + (days*24*60*60*1000));
+					expires = "; expires=" + date.toUTCString();
+				}
+				document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+			},
+			eraseCookie: function (name) {   
+				document.cookie = name+'=; Max-Age=-99999999;';
+			},
+		};
+
+		document.addEventListener('DOMContentLoaded', function(event) {
+			App.init();
+		});
+
+	</script>
+</body>
+</html>
