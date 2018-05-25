@@ -1,6 +1,6 @@
 (function(document, window) {
 /*
-	GDPR Lockdown
+	Simple GDPR Lockdown
 
 	This is a simple GDPR implementation to lockdown any page
 	to its core services so it remains accessible to EU users.
@@ -10,6 +10,8 @@
 
 	It relies on location information passed client-side via cookie
 	that tells it whether GDPR applies or not.
+
+	Source: https://github.com/donohoe/simple-gdpr-lockdown/
 */
 	console.log( "Simple GDPR" );
 	window.GDPR = {
